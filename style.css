@@ -1,0 +1,190 @@
+:root {
+  --bg-color: #050505;
+  --panel-bg: #111111;
+  --card-bg: #161616;
+  --text-dim: #888;
+  --blue: #3b82f6;
+  --green: #22c55e;
+  --red: #ef4444;
+
+  --clr-twitch: #9146ff;
+  --clr-crunchy: #ff6400;
+  --clr-prime: #00a8e1;
+  --clr-espn: #ff0033;
+  --clr-hbo: #9933ff;
+  --clr-nba: #552583;
+  --clr-lakers: #fdb927;
+}
+
+body {
+  background-color: var(--bg-color) !important;
+  color: #eee !important;
+  font-family: "Inter", sans-serif;
+  margin: 0;
+  padding: 15px;
+}
+
+.admin-panel {
+  background: var(--panel-bg);
+  padding: 15px 20px;
+  border-radius: 12px;
+  margin-bottom: 20px;
+  border: 1px solid #222;
+}
+
+#schedule-form {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+input,
+select,
+button {
+  background: #1f1f1f;
+  border: 1px solid #333;
+  color: white;
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-size: 13px;
+}
+
+.time-picker-group {
+  display: flex;
+  align-items: center;
+  background: #1f1f1f;
+  border: 1px solid #333;
+  border-radius: 6px;
+  padding: 0 8px;
+}
+
+.time-picker-group select {
+  border: none;
+  color: var(--blue);
+  font-weight: bold;
+}
+
+.schedule-container {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 8px;
+}
+
+.day-column {
+  background: rgba(255, 255, 255, 0.01);
+  border-radius: 8px;
+  padding: 8px;
+}
+
+.day-name {
+  font-size: 11px;
+  font-weight: 800;
+  color: #555;
+  text-align: center;
+  text-transform: uppercase;
+  margin-bottom: 12px;
+}
+
+.card {
+  background: var(--card-bg);
+  padding: 10px;
+  border-radius: 8px;
+  margin-bottom: 8px;
+  border-left: 3px solid #333;
+}
+
+.card-title {
+  font-weight: 700;
+  font-size: 13px;
+  margin-bottom: 6px;
+  display: block;
+}
+
+.card.twitch {
+  border-left-color: var(--clr-twitch);
+}
+.card.crunchyroll {
+  border-left-color: var(--clr-crunchy);
+}
+.card.prime-video {
+  border-left-color: var(--clr-prime);
+}
+.card.hbo-max {
+  border-left-color: var(--clr-hbo);
+}
+.card.espn {
+  border-left-color: var(--clr-espn);
+}
+.card.nba {
+  border-left-color: var(--clr-nba);
+}
+.card.nba .card-title {
+  color: var(--clr-lakers);
+}
+
+.card-info {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+  color: var(--text-dim);
+}
+
+.info-item {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.info-item i,
+.info-item svg {
+  width: 14px;
+  height: 14px;
+}
+
+.card-actions {
+  display: flex;
+  gap: 6px;
+  margin-top: 10px;
+  justify-content: flex-end;
+}
+
+.icon-btn {
+  width: 34px !important;
+  height: 34px !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #252525;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  color: #fff;
+  padding: 0;
+}
+
+/* Aumenta o desenho do lápis e lixo */
+.icon-btn svg {
+  width: 20px !important;
+  height: 20px !important;
+  stroke-width: 2.5px;
+}
+
+.icon-btn.edit:hover {
+  color: var(--green);
+  background: #2a352a;
+}
+.icon-btn.delete:hover {
+  color: var(--red);
+  background: #352a2a;
+}
+
+#submit-btn {
+  background: var(--blue);
+  border: none;
+  font-weight: bold;
+}
+#clear-btn {
+  background: transparent;
+  border: 1px solid var(--red);
+  color: var(--red);
+}

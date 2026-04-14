@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="pt-br">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Cronograma Premium</title>
+    <link rel="stylesheet" href="style.css" />
+    <script src="https://unpkg.com/lucide@latest"></script>
+  </head>
+  <body>
+    <header class="admin-panel">
+      <h3>Gerenciar Evento</h3>
+      <form id="schedule-form">
+        <input
+          type="text"
+          id="title"
+          placeholder="Título (Ex: Flamengo, Lakers...)"
+          required
+        />
+
+        <div class="time-picker-group">
+          <select id="hour" title="Hora"></select>
+          <span>:</span>
+          <select id="minute" title="Minutos"></select>
+        </div>
+
+        <select id="place">
+          <option value="Twitch">Twitch</option>
+          <option value="Crunchyroll">Crunchyroll</option>
+          <option value="Prime Video">Prime Video</option>
+          <option value="HBO Max">HBO Max</option>
+          <option value="Disney+">Disney+</option>
+          <option value="ESPN">ESPN</option>
+          <option value="Globo / Premiere">Globo / Premiere</option>
+          <option value="Youtube">Youtube</option>
+          <option value="Netflix">Netflix</option>
+        </select>
+
+        <select id="day">
+          <option value="SEGUNDA">Segunda</option>
+          <option value="TERÇA">Terça</option>
+          <option value="QUARTA">Quarta</option>
+          <option value="QUINTA">Quinta</option>
+          <option value="SEXTA">Sexta</option>
+          <option value="SÁBADO">Sábado</option>
+          <option value="DOMINGO">Domingo</option>
+        </select>
+
+        <select id="type">
+          <option value="anime">Anime</option>
+          <option value="futebol">Futebol</option>
+          <option value="esports">Esports</option>
+          <option value="serie">Série</option>
+          <option value="nba">NBA</option>
+        </select>
+
+        <div class="form-actions">
+          <button type="submit" id="submit-btn">Adicionar</button>
+          <button type="button" id="clear-btn">Limpar Semana</button>
+        </div>
+      </form>
+    </header>
+
+    <main class="schedule-container" id="schedule-container"></main>
+
+    <script src="script.js"></script>
+  </body>
+</html>
