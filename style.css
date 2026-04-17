@@ -1,31 +1,34 @@
 :root {
-  --bg-color: #050505;
-  --panel-bg: #111111;
-  --card-bg: #161616;
-  --text-dim: #888;
-  --blue: #3b82f6;
-  --green: #22c55e;
-  --red: #ef4444;
+  --bg: #050505;
+  --surface: #111111;
+  --card: #161616;
+  --primary: #3b82f6;
+  --danger: #ef4444;
+  --success: #22c55e;
+  --text: #eeeeee;
+  --text-muted: #888888;
 
-  --clr-twitch: #9146ff;
-  --clr-crunchy: #ff6400;
-  --clr-prime: #00a8e1;
-  --clr-espn: #ff0033;
-  --clr-hbo: #9933ff;
-  --clr-nba: #552583;
-  --clr-lakers: #fdb927;
+  /* Cores das Plataformas */
+  --twitch: #a970ff;
+  --crunchy: #ff6400;
+  --prime: #00a8e1;
+  --espn: #ff0033;
+  --hbo: #9933ff;
+  --netflix: #e50914;
+  --youtube: #ff0000;
 }
 
 body {
-  background-color: var(--bg-color) !important;
-  color: #eee !important;
+  background: var(--bg);
+  color: var(--text);
   font-family: "Inter", sans-serif;
   margin: 0;
   padding: 15px;
 }
 
+/* --- Painel de Administração --- */
 .admin-panel {
-  background: var(--panel-bg);
+  background: var(--surface);
   padding: 15px 20px;
   border-radius: 12px;
   margin-bottom: 20px;
@@ -48,36 +51,29 @@ button {
   padding: 8px 12px;
   border-radius: 6px;
   font-size: 13px;
+  outline: none;
 }
 
-.time-picker-group {
-  display: flex;
-  align-items: center;
-  background: #1f1f1f;
-  border: 1px solid #333;
-  border-radius: 6px;
-  padding: 0 8px;
-}
-
-.time-picker-group select {
-  border: none;
-  color: var(--blue);
-  font-weight: bold;
-}
-
-.schedule-container {
+/* --- Grid de Horários --- */
+.schedule-grid {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
   gap: 8px;
 }
 
-.day-column {
-  background: rgba(255, 255, 255, 0.01);
-  border-radius: 8px;
-  padding: 8px;
+@media (max-width: 1100px) {
+  .schedule-grid {
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  }
 }
 
-.day-name {
+.day-column {
+  background: rgba(255, 255, 255, 0.01);
+  padding: 8px;
+  border-radius: 8px;
+}
+
+.day-label {
   font-size: 11px;
   font-weight: 800;
   color: #555;
@@ -86,105 +82,145 @@ button {
   margin-bottom: 12px;
 }
 
-.card {
-  background: var(--card-bg);
+/* --- Estilo do Card --- */
+.event-card {
+  background: var(--card);
   padding: 10px;
   border-radius: 8px;
   margin-bottom: 8px;
   border-left: 3px solid #333;
 }
 
-.card-title {
-  font-weight: 700;
-  font-size: 13px;
-  margin-bottom: 6px;
+.event-title {
   display: block;
+  font-size: 13px;
+  font-weight: 700;
+  margin-bottom: 6px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-.card.twitch {
-  border-left-color: var(--clr-twitch);
-}
-.card.crunchyroll {
-  border-left-color: var(--clr-crunchy);
-}
-.card.prime-video {
-  border-left-color: var(--clr-prime);
-}
-.card.hbo-max {
-  border-left-color: var(--clr-hbo);
-}
-.card.espn {
-  border-left-color: var(--clr-espn);
-}
-.card.nba {
-  border-left-color: var(--clr-nba);
-}
-.card.nba .card-title {
-  color: var(--clr-lakers);
-}
-
-.card-info {
+.event-meta {
   display: flex;
   justify-content: space-between;
+  align-items: center;
   font-size: 11px;
-  color: var(--text-dim);
+  color: #bbb;
 }
 
-.info-item {
+.meta-item {
   display: flex;
   align-items: center;
-  gap: 4px;
-}
-.info-item i,
-.info-item svg {
-  width: 14px;
-  height: 14px;
+  gap: 6px;
 }
 
+/* --- Ícones Globais e Plataformas --- */
+.meta-item svg,
+.meta-item i,
+[data-lucide="youtube"],
+[data-lucide="twitch"] {
+  width: 16px !important;
+  height: 16px !important;
+  stroke-width: 2.5px;
+  display: inline-block !important;
+}
+
+/* --- Botões de Ação (Lápis/Lixo) --- */
 .card-actions {
   display: flex;
-  gap: 6px;
-  margin-top: 10px;
   justify-content: flex-end;
+  gap: 6px;
+  margin-top: 8px;
+  border-top: 1px solid #222;
+  padding-top: 6px;
 }
 
-.icon-btn {
-  width: 34px !important;
-  height: 34px !important;
+.btn-icon {
+  background: #222;
+  border: none;
+  width: 38px !important;
+  height: 36px !important;
+  border-radius: 80px;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #252525;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
   color: #fff;
-  padding: 0;
 }
 
-/* Aumenta o desenho do lápis e lixo */
-.icon-btn svg {
+.btn-icon svg {
   width: 20px !important;
   height: 20px !important;
   stroke-width: 2.5px;
 }
 
-.icon-btn.edit:hover {
-  color: var(--green);
-  background: #2a352a;
-}
-.icon-btn.delete:hover {
-  color: var(--red);
-  background: #352a2a;
+.btn-icon.edit:hover {
+  background: var(--success);
+  color: #000;
 }
 
-#submit-btn {
-  background: var(--blue);
-  border: none;
-  font-weight: bold;
+.btn-icon.delete:hover {
+  background: var(--danger);
+  color: #fff;
 }
+
+/* --- Botões Principais (Adicionar/Limpar) --- */
+#submit-btn {
+  background: var(--primary);
+  font-weight: bold;
+  border: none;
+}
+
+.btn-edit-mode {
+  background: var(--success) !important;
+}
+
 #clear-btn {
   background: transparent;
-  border: 1px solid var(--red);
-  color: var(--red);
+  border: 1px solid var(--danger);
+  color: var(--danger);
+}
+
+/* --- Animações Unificadas (Hover e Click) --- */
+#submit-btn,
+#clear-btn,
+.btn-icon {
+  transition: all 0.2s ease-in-out;
+  cursor: pointer;
+}
+
+#submit-btn:hover,
+#clear-btn:hover,
+.btn-icon:hover {
+  transform: scale(1.08); /* Aumenta levemente no hover */
+  filter: brightness(1.2);
+}
+
+#submit-btn:active,
+#clear-btn:active,
+.btn-icon:active {
+  transform: scale(0.92); /* Efeito de apertar ao clicar */
+}
+
+/* --- Cores de Borda das Plataformas --- */
+.p-twitch {
+  border-left-color: var(--twitch);
+}
+.p-crunchy {
+  border-left-color: var(--crunchy);
+}
+.p-prime {
+  border-left-color: var(--prime);
+}
+.p-espn {
+  border-left-color: var(--espn);
+}
+.p-hbo {
+  border-left-color: var(--hbo);
+}
+.p-netflix {
+  border-left-color: var(--netflix);
+}
+.p-youtube {
+  border-left-color: var(--youtube);
 }

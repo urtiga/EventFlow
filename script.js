@@ -1,160 +1,139 @@
-const form = document.getElementById("schedule-form");
-const container = document.getElementById("schedule-container");
-const submitBtn = document.getElementById("submit-btn");
-
-const DAYS = [
-  "SEGUNDA",
-  "TERÇA",
-  "QUARTA",
-  "QUINTA",
-  "SEXTA",
-  "SÁBADO",
-  "DOMINGO",
-];
+const CONFIG = {
+  DAYS: ["SEGUNDA", "TERÇA", "QUARTA", "QUINTA", "SEXTA", "SÁBADO", "DOMINGO"],
+  PLATFORMS: {
+    // Trocando para nomes genéricos ou fallbacks seguros
+    twitch: { icon: "monitor-play", class: "p-twitch" }, // Ícone de monitor com play (parece streaming)
+    youtube: { icon: "play", class: "p-youtube" }, // Ícone de triângulo de play (universal do YT)
+    crunchyroll: { icon: "clapperboard", class: "p-crunchy" },
+    "prime video": { icon: "play-circle", class: "p-prime" },
+    "hbo max": { icon: "tv", class: "p-hbo" },
+    espn: { icon: "trophy", class: "p-espn" },
+    netflix: { icon: "film", class: "p-netflix" },
+  },
+};
 let scheduleData = JSON.parse(localStorage.getItem("mySchedule")) || {};
 let editState = { index: null, day: null };
 
-const platformIcons = {
-  twitch: "twitch",
-  youtube: "youtube",
-  crunchyroll: "clapperboard",
-  "prime video": "play-circle",
-  "hbo max": "tv",
-  "disney+": "monitor",
-  espn: "trophy",
-  "globo / premiere": "tv-2",
-  netflix: "film",
+const elements = {
+  form: document.getElementById("schedule-form"),
+  container: document.getElementById("schedule-container"),
+  submitBtn: document.getElementById("submit-btn"),
+  clearBtn: document.getElementById("clear-btn"),
 };
 
 const init = () => {
-  populateTimeSelectors();
-  DAYS.forEach((day) => {
+  setupTimeSelectors();
+  CONFIG.DAYS.forEach((day) => {
     if (!scheduleData[day]) scheduleData[day] = [];
   });
   render();
 };
 
-const populateTimeSelectors = () => {
+const setupTimeSelectors = () => {
   const hSelect = document.getElementById("hour");
   const mSelect = document.getElementById("minute");
   for (let i = 0; i < 24; i++)
-    hSelect.add(
-      new Option(i.toString().padStart(2, "0"), i.toString().padStart(2, "0")),
-    );
+    hSelect.add(new Option(i.toString().padStart(2, "0")));
   for (let i = 0; i < 60; i += 5)
-    mSelect.add(
-      new Option(i.toString().padStart(2, "0"), i.toString().padStart(2, "0")),
-    );
+    mSelect.add(new Option(i.toString().padStart(2, "0")));
 };
 
 const render = () => {
-  container.innerHTML = "";
-  DAYS.forEach((day) => {
-    const dayDiv = document.createElement("div");
-    dayDiv.className = "day-column";
-    dayDiv.innerHTML = `<h2 class="day-name">${day}</h2>`;
+  elements.container.innerHTML = "";
 
-    scheduleData[day].sort((a, b) => a.time.localeCompare(b.time));
+  CONFIG.DAYS.forEach((day) => {
+    const dayColumn = document.createElement("section");
+    dayColumn.className = "day-column";
+    dayColumn.innerHTML = `<h2 class="day-label">${day}</h2>`;
 
-    scheduleData[day].forEach((item, index) => {
-      const platformKey = item.place.toLowerCase().trim();
+    const events = [...scheduleData[day]].sort((a, b) =>
+      a.time.localeCompare(b.time),
+    );
 
-      // Força o ícone da Twitch
-      let iconName = platformIcons[platformKey] || "external-link";
-      if (platformKey.includes("twitch")) iconName = "twitch";
+    events.forEach((event, index) => {
+      const platform = CONFIG.PLATFORMS[event.place.toLowerCase()] || {
+        icon: "external-link",
+        class: "",
+      };
 
-      const platformClass = platformKey
-        .replace(/\s+/g, "-")
-        .replace(/[^\w-]/g, "");
-      const finalClass = item.type === "nba" ? "nba" : platformClass;
-
-      dayDiv.innerHTML += `
-                <article class="card ${finalClass}">
-                    <div class="card-title">${item.title}</div>
-                    <div class="card-info">
-                        <div class="info-item">
-                            <i data-lucide="clock"></i>
-                            <span>${item.time}</span>
-                        </div>
-                        <div class="info-item">
-                            <i data-lucide="${iconName}"></i>
-                            <span>${item.place}</span>
-                        </div>
-                    </div>
-                    <div class="card-actions">
-                        <button type="button" class="icon-btn edit" onclick="prepareEdit('${day}', ${index})">
-                            <i data-lucide="pencil"></i>
-                        </button>
-                        <button type="button" class="icon-btn delete" onclick="deleteItem('${day}', ${index})">
-                            <i data-lucide="trash-2"></i>
-                        </button>
-                    </div>
-                </article>`;
+      const card = document.createElement("article");
+      card.className = `event-card ${platform.class}`;
+      card.innerHTML = `
+        <strong class="event-title">${event.title}</strong>
+        <div class="event-meta">
+          <span class="meta-item"><i data-lucide="clock"></i> ${event.time}</span>
+          <span class="meta-item"><i data-lucide="${platform.icon}"></i> ${event.place}</span>
+        </div>
+        <div class="card-actions">
+          <button class="btn-icon edit" title="Editar" onclick="handleEdit('${day}', ${index})"><i data-lucide="pencil"></i></button>
+          <button class="btn-icon delete" title="Excluir" onclick="handleDelete('${day}', ${index})"><i data-lucide="trash-2"></i></button>
+        </div>
+      `;
+      dayColumn.appendChild(card);
     });
-    container.appendChild(dayDiv);
+    elements.container.appendChild(dayColumn);
   });
   if (window.lucide) lucide.createIcons();
 };
 
-form.addEventListener("submit", (e) => {
+elements.form.onsubmit = (e) => {
   e.preventDefault();
-  const time = `${document.getElementById("hour").value}:${document.getElementById("minute").value}`;
-  const newItem = {
+  const day = document.getElementById("day").value;
+  const newEvent = {
     title: document.getElementById("title").value,
-    time: time,
+    time: `${document.getElementById("hour").value}:${document.getElementById("minute").value}`,
     place: document.getElementById("place").value,
-    type: document.getElementById("type").value,
   };
-  const selectedDay = document.getElementById("day").value;
 
   if (editState.index !== null) {
     scheduleData[editState.day].splice(editState.index, 1);
     resetEditState();
   }
 
-  scheduleData[selectedDay].push(newItem);
-  saveAndRender();
-  form.reset();
-});
+  scheduleData[day].push(newEvent);
+  save();
+};
 
-window.prepareEdit = (day, index) => {
+window.handleEdit = (day, index) => {
   const item = scheduleData[day][index];
   const [h, m] = item.time.split(":");
+
   document.getElementById("title").value = item.title;
   document.getElementById("hour").value = h;
   document.getElementById("minute").value = m;
   document.getElementById("place").value = item.place;
   document.getElementById("day").value = day;
-  document.getElementById("type").value = item.type;
+
   editState = { index, day };
-  submitBtn.innerText = "Salvar Alteração";
-  submitBtn.style.background = "var(--green)";
+  elements.submitBtn.textContent = "Salvar";
+  elements.submitBtn.classList.add("btn-edit-mode");
   window.scrollTo({ top: 0, behavior: "smooth" });
 };
 
-const resetEditState = () => {
-  editState = { index: null, day: null };
-  submitBtn.innerText = "Adicionar";
-  submitBtn.style.background = "var(--blue)";
-};
-
-window.deleteItem = (day, index) => {
-  if (confirm("Remover evento?")) {
+window.handleDelete = (day, index) => {
+  if (confirm("Excluir evento?")) {
     scheduleData[day].splice(index, 1);
-    saveAndRender();
+    save();
   }
 };
 
-const saveAndRender = () => {
+const save = () => {
   localStorage.setItem("mySchedule", JSON.stringify(scheduleData));
   render();
+  elements.form.reset();
 };
 
-document.getElementById("clear-btn").onclick = () => {
+elements.clearBtn.onclick = () => {
   if (confirm("Limpar toda a semana?")) {
     localStorage.clear();
     location.reload();
   }
+};
+
+const resetEditState = () => {
+  editState = { index: null, day: null };
+  elements.submitBtn.textContent = "Adicionar";
+  elements.submitBtn.classList.remove("btn-edit-mode");
 };
 
 init();
