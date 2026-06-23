@@ -89,14 +89,20 @@ h1 {
   display: flex;
   gap: 8px;
   align-items: center;
+  justify-content: flex-end;
+  width: fit-content;
+  padding: 4px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.03);
 }
 
 .view-toggle {
-  border: 1px solid var(--border);
+  border: 1px solid transparent;
   background: transparent;
   color: var(--text);
   border-radius: 999px;
-  padding: 10px 16px;
+  padding: 9px 16px;
   font-weight: 600;
   cursor: pointer;
   transition: transform 0.2s ease, background 0.2s ease, border-color 0.2s ease;
@@ -113,7 +119,7 @@ h1 {
 
 #schedule-form {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: minmax(220px, 420px) minmax(220px, 1fr);
   gap: 14px;
   align-items: flex-end;
 }
@@ -141,7 +147,7 @@ button {
 }
 
 #title {
-  grid-column: span 2;
+  width: 100%;
 }
 
 .custom-place-fields {
@@ -349,10 +355,17 @@ button:focus {
   transform: scale(0.98);
 }
 
+.schedule-toolbar {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 18px;
+}
+
 .schedule-summary {
   padding: 18px 22px;
   border-radius: 20px;
-  margin-bottom: 18px;
   background: rgba(255, 255, 255, 0.03);
   border: 1px solid var(--border);
   color: var(--text-muted);
@@ -941,8 +954,56 @@ button:active,
     grid-template-columns: 1fr;
   }
 
+  #schedule-form > *,
+  #title,
+  .custom-place-fields,
+  .form-actions {
+    grid-column: 1 / -1;
+    width: 100%;
+    max-width: none;
+  }
+
   .row-groups {
-    grid-column: span 1;
+    grid-column: 1 / -1;
+  }
+
+  .timing-row,
+  .schedule-row {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+
+  .time-picker-group,
+  .time-picker-group select,
+  .field-compact,
+  .field-platform,
+  .schedule-row #day {
+    width: 100%;
+    max-width: none;
+  }
+
+  select,
+  input[type="date"],
+  input[type="number"] {
+    min-width: 0;
+  }
+
+  .field-inline,
+  .event-date-field:not(.hidden) {
+    width: 100%;
+  }
+
+  .schedule-toolbar {
+    grid-template-columns: 1fr;
+  }
+
+  .view-switcher {
+    justify-self: stretch;
+    width: 100%;
+  }
+
+  .view-toggle {
+    flex: 1;
   }
 
   .schedule-grid,

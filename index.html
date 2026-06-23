@@ -15,10 +15,6 @@
           <h1>Meus lançamentos da semana</h1>
           <p class="subtitle">Escolha entre a vista semanal ou um calendário mensal inteligente com o mês atual.</p>
         </div>
-        <div class="view-switcher">
-          <button type="button" id="weekly-view-btn" class="view-toggle active">Semana</button>
-          <button type="button" id="monthly-view-btn" class="view-toggle">Mês</button>
-        </div>
       </div>
 
       <form id="schedule-form">
@@ -76,7 +72,8 @@
         </div>
 
         <select id="place" class="field-compact field-platform">
-          <option value="">Nenhuma plataforma</option>
+          <option value="" selected disabled>Selecionar plataforma</option>
+          <option value="none">Nenhuma plataforma</option>
           <option value="other">Outra plataforma</option>
           <option value="twitch">Twitch</option>
           <option value="crunchyroll">Crunchyroll</option>
@@ -107,7 +104,13 @@
       </form>
     </header>
 
-    <section class="schedule-summary" id="schedule-summary"></section>
+    <section class="schedule-toolbar" aria-label="Resumo e visualização da agenda">
+      <div class="schedule-summary" id="schedule-summary"></div>
+      <div class="view-switcher" aria-label="Alternar visualização">
+        <button type="button" id="weekly-view-btn" class="view-toggle active">Semana</button>
+        <button type="button" id="monthly-view-btn" class="view-toggle">Mês</button>
+      </div>
+    </section>
 
     <div class="toast-container" id="toast-container" aria-live="polite" aria-atomic="true"></div>
 
@@ -184,7 +187,8 @@
           </div>
 
           <select id="edit-place">
-            <option value="">Nenhuma plataforma</option>
+            <option value="" disabled>Selecionar plataforma</option>
+            <option value="none">Nenhuma plataforma</option>
             <option value="other">Outra plataforma</option>
             <option value="twitch">Twitch</option>
             <option value="crunchyroll">Crunchyroll</option>

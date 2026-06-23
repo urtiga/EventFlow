@@ -256,7 +256,7 @@ const normalizeUrl = (url) => {
 
 const readPlaceFromForm = (placeSelect, customPlaceInput, customUrlInput) => {
   const selected = placeSelect.value.trim();
-  if (!selected) return { place: "", placeUrl: "" };
+  if (!selected || selected === "none") return { place: "", placeUrl: "" };
   if (selected === "other") {
     return {
       place: customPlaceInput.value.trim(),
@@ -288,7 +288,7 @@ const fillPlaceFields = (placeSelect, customPlaceInput, customUrlInput, event) =
     customPlaceInput.value = event.place || "";
     customUrlInput.value = event.placeUrl || "";
   } else {
-    placeSelect.value = "";
+    placeSelect.value = "none";
     customPlaceInput.value = "";
     customUrlInput.value = "";
   }
