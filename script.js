@@ -32,6 +32,7 @@ const WEEKDAYS = ["DOMINGO", "SEGUNDA", "TERÇA", "QUARTA", "QUINTA", "SEXTA", "
 const STATE = {
   viewMode: "weekly",
   monthOffset: 0,
+  platformFilter: "all",
 };
 
 let scheduleData = JSON.parse(localStorage.getItem("mySchedule")) || [];
@@ -45,6 +46,7 @@ const elements = {
   submitBtn: document.getElementById("submit-btn"),
   clearBtn: document.getElementById("clear-btn"),
   scheduleSummary: document.getElementById("schedule-summary"),
+  platformFilter: document.getElementById("platform-filter"),
   calendarHeader: document.getElementById("calendar-header"),
   monthName: document.getElementById("calendar-month-name"),
   monthDesc: document.getElementById("calendar-month-desc"),
@@ -112,6 +114,10 @@ const bindEvents = () => {
     render();
   });
   elements.repeatType.addEventListener("change", updateRepeatFields);
+  elements.platformFilter.addEventListener("change", () => {
+    STATE.platformFilter = elements.platformFilter.value;
+    render();
+  });
   elements.eventDate.addEventListener("change", updateDayFromDate);
   elements.placeSelect.addEventListener("change", updatePlaceFields);
   elements.editRepeatType.addEventListener("change", updateEditRepeatFields);
@@ -247,6 +253,24 @@ const isKnownPlatform = (place) => {
   return Boolean(CONFIG.PLATFORMS[aliases[key] || key]);
 };
 
+const getPlatformKey = (place) => {
+  if (!place) return "none";
+  const key = place.toLowerCase().trim();
+  const aliases = { "disney plus": "disney", "disney+": "disney" };
+  return aliases[key] || key;
+};
+
+const matchesPlatformFilter = (event) => {
+  const filter = STATE.platformFilter;
+  if (filter === "all") return true;
+  const key = getPlatformKey(event.place);
+  if (filter === "none") return key === "none";
+  if (filter === "other") return key !== "none" && !isKnownPlatform(event.place);
+  return key === filter;
+};
+
+const getFilteredScheduleData = () => scheduleData.filter(matchesPlatformFilter);
+
 const normalizeUrl = (url) => {
   const trimmed = url?.trim();
   if (!trimmed) return "";
@@ -307,6 +331,7 @@ const updateRepeatFields = () => {
   elements.repeatWeeksField.classList.toggle("hidden", isUnique);
   elements.eventDateField.classList.toggle("hidden", !isUnique);
   elements.scheduleRow.classList.toggle("is-unique", isUnique);
+  elements.submitBtn.textContent = isUnique ? "Adicionar evento único" : "Adicionar evento semanal";
   if (isUnique && elements.eventDate.value) {
     updateDayFromDate();
   }
@@ -354,6 +379,11 @@ const render = () => {
   elements.container.innerHTML = "";
   elements.scheduleSummary.textContent = getSummaryText();
 
+  if (scheduleData.length === 0 || getFilteredScheduleData().length === 0) {
+    renderEmptyState();
+    return;
+  }
+
   if (STATE.viewMode === "monthly") {
     renderMonthly();
   } else {
@@ -361,13 +391,32 @@ const render = () => {
   }
 };
 
+const renderEmptyState = () => {
+  elements.calendarHeader.classList.add("hidden");
+  elements.container.className = "schedule-empty-state";
+  const isFiltered = scheduleData.length > 0;
+  elements.container.innerHTML = `
+    <section class="empty-panel">
+      <i data-lucide="${isFiltered ? "filter-x" : "calendar-plus"}"></i>
+      <strong>${isFiltered ? "Nada encontrado nesse filtro" : "Sua agenda ainda está vazia"}</strong>
+      <p>${isFiltered ? "Troque a plataforma selecionada para ver outros eventos." : "Adicione um lançamento para começar a montar sua semana."}</p>
+    </section>
+  `;
+  if (window.lucide) lucide.createIcons();
+};
+
 const getSummaryText = () => {
   if (scheduleData.length === 0) {
     return "Nenhum evento cadastrado ainda. Adicione seus lançamentos e acompanhe no calendário.";
   }
 
+  const filteredEvents = getFilteredScheduleData();
+  if (filteredEvents.length === 0) {
+    return "Nenhum evento combina com o filtro atual.";
+  }
+
   if (STATE.viewMode === "weekly") {
-    const total = scheduleData.length;
+    const total = filteredEvents.length;
     return (
       `Você tem ${total} evento${total > 1 ? "s" : ""} configurado${total > 1 ? "s" : ""}. ` +
       "Veja sua semana organizada por dia."
@@ -432,8 +481,8 @@ const renderWeekly = () => {
           ${renderPlatformMeta(platform)}
         </div>
         <div class="card-actions">
-          <button type="button" class="btn-action edit" data-event-id="${event.id}" title="Editar"><i data-lucide="pencil"></i>Editar</button>
-          <button type="button" class="btn-action delete" data-event-id="${event.id}" data-event-date="${event.date}" title="Excluir"><i data-lucide="trash-2"></i>Excluir</button>
+          <button type="button" class="btn-action edit" data-event-id="${event.id}" title="Editar" aria-label="Editar"><i data-lucide="pencil"></i></button>
+          <button type="button" class="btn-action delete" data-event-id="${event.id}" data-event-date="${event.date}" title="Excluir" aria-label="Excluir"><i data-lucide="trash-2"></i></button>
         </div>
       `;
       dayColumn.appendChild(card);
@@ -500,8 +549,8 @@ const renderMonthly = () => {
           ${renderPlatformMeta(platform)}
         </div>
         <div class="card-actions calendar-card-actions">
-          <button type="button" class="btn-action edit" data-event-id="${event.id}" title="Editar"><i data-lucide="pencil"></i>Editar</button>
-          <button type="button" class="btn-action delete" data-event-id="${event.id}" data-event-date="${event.date}" title="Excluir"><i data-lucide="trash-2"></i>Excluir</button>
+          <button type="button" class="btn-action edit" data-event-id="${event.id}" title="Editar" aria-label="Editar"><i data-lucide="pencil"></i></button>
+          <button type="button" class="btn-action delete" data-event-id="${event.id}" data-event-date="${event.date}" title="Excluir" aria-label="Excluir"><i data-lucide="trash-2"></i></button>
         </div>
       `;
       dayCard.appendChild(eventPill);
@@ -668,7 +717,7 @@ const save = () => {
 };
 
 elements.clearBtn.onclick = () => {
-  showModal("Limpar toda a semana? Todos os eventos serão removidos.", () => {
+  showModal("Limpar toda a agenda? Todos os eventos serão removidos.", () => {
     localStorage.removeItem("mySchedule");
     scheduleData = [];
     STATE.monthOffset = 0;
@@ -716,14 +765,14 @@ const getCurrentWeekRange = () => {
 };
 
 const getOccurrencesForWeek = (dayName, weekStart, weekEnd) => {
-  return scheduleData
+  return getFilteredScheduleData()
     .flatMap((event) => getOccurrencesForEvent(event, weekStart, weekEnd))
     .filter((occ) => occ.day === dayName);
 };
 
 const getOccurrencesForDate = (dateString) => {
   const date = parseDate(dateString);
-  return scheduleData
+  return getFilteredScheduleData()
     .flatMap((event) => getOccurrencesForEvent(event, date, date))
     .filter((occ) => occ.date === dateString);
 };

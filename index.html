@@ -18,12 +18,31 @@
       </div>
 
       <form id="schedule-form">
-        <input
-          type="text"
-          id="title"
-          placeholder="Título (Ex: UFC, Série, Filme...)"
-          required
-        />
+        <label class="form-field title-field" for="title">
+          <span>Título</span>
+          <input
+            type="text"
+            id="title"
+            placeholder="Ex: UFC, Série, Filme..."
+            required
+          />
+        </label>
+
+        <label class="form-field platform-field" for="place">
+          <span>Plataforma</span>
+          <select id="place" class="field-compact field-platform">
+            <option value="" selected disabled>Selecionar plataforma</option>
+            <option value="none">Nenhuma plataforma</option>
+            <option value="other">Outra plataforma</option>
+            <option value="twitch">Twitch</option>
+            <option value="crunchyroll">Crunchyroll</option>
+            <option value="prime video">Prime Video</option>
+            <option value="hbo max">HBO Max</option>
+            <option value="disney">Disney+</option>
+            <option value="youtube">Youtube</option>
+            <option value="netflix">Netflix</option>
+          </select>
+        </label>
 
         <div class="row row-groups timing-row">
           <div class="time-picker-group">
@@ -33,8 +52,8 @@
           </div>
 
           <select id="repeat-type" class="field-compact">
-            <option value="weekly">Semanal</option>
-            <option value="unique">Único</option>
+            <option value="weekly">Repete toda semana</option>
+            <option value="unique">Acontece uma vez</option>
           </select>
         </div>
 
@@ -52,7 +71,7 @@
           <div class="field-inline repeat-weeks-field" id="repeat-weeks-field">
             <label for="repeat-weeks">Repetir por quantas semanas?</label>
             <div class="number-stepper">
-              <button type="button" class="stepper-btn" data-stepper-target="repeat-weeks" data-step="-1" aria-label="Menos uma semana">−</button>
+              <button type="button" class="stepper-btn" data-stepper-target="repeat-weeks" data-step="-1" aria-label="Menos uma semana">-</button>
               <input
                 type="number"
                 id="repeat-weeks"
@@ -71,19 +90,6 @@
           </div>
         </div>
 
-        <select id="place" class="field-compact field-platform">
-          <option value="" selected disabled>Selecionar plataforma</option>
-          <option value="none">Nenhuma plataforma</option>
-          <option value="other">Outra plataforma</option>
-          <option value="twitch">Twitch</option>
-          <option value="crunchyroll">Crunchyroll</option>
-          <option value="prime video">Prime Video</option>
-          <option value="hbo max">HBO Max</option>
-          <option value="disney">Disney+</option>
-          <option value="youtube">Youtube</option>
-          <option value="netflix">Netflix</option>
-        </select>
-
         <input
           type="text"
           id="custom-place"
@@ -98,17 +104,34 @@
         />
 
         <div class="form-actions">
-          <button type="submit" id="submit-btn">Adicionar</button>
-          <button type="button" id="clear-btn">Limpar semana</button>
+          <button type="submit" id="submit-btn">Adicionar evento semanal</button>
+          <button type="button" id="clear-btn">Limpar agenda</button>
         </div>
       </form>
     </header>
 
     <section class="schedule-toolbar" aria-label="Resumo e visualização da agenda">
       <div class="schedule-summary" id="schedule-summary"></div>
-      <div class="view-switcher" aria-label="Alternar visualização">
-        <button type="button" id="weekly-view-btn" class="view-toggle active">Semana</button>
-        <button type="button" id="monthly-view-btn" class="view-toggle">Mês</button>
+      <div class="schedule-controls">
+        <div class="view-switcher" aria-label="Alternar visualização">
+          <button type="button" id="weekly-view-btn" class="view-toggle active">Semana</button>
+          <button type="button" id="monthly-view-btn" class="view-toggle">Mês</button>
+        </div>
+        <label class="filter-field" for="platform-filter">
+          <span>Filtrar</span>
+          <select id="platform-filter">
+            <option value="all">Todas as plataformas</option>
+            <option value="none">Sem plataforma</option>
+            <option value="other">Outras plataformas</option>
+            <option value="twitch">Twitch</option>
+            <option value="crunchyroll">Crunchyroll</option>
+            <option value="prime video">Prime Video</option>
+            <option value="hbo max">HBO Max</option>
+            <option value="disney">Disney+</option>
+            <option value="youtube">Youtube</option>
+            <option value="netflix">Netflix</option>
+          </select>
+        </label>
       </div>
     </section>
 
@@ -148,8 +171,8 @@
               <select id="edit-minute" title="Minutos"></select>
             </div>
             <select id="edit-repeat-type" class="edit-repeat-type">
-              <option value="weekly">Semanal</option>
-              <option value="unique">Único</option>
+              <option value="weekly">Repete toda semana</option>
+              <option value="unique">Acontece uma vez</option>
             </select>
           </div>
 
@@ -167,7 +190,7 @@
             <div class="field-inline repeat-weeks-field" id="edit-repeat-weeks-field">
               <label for="edit-repeat-weeks">Repetir por quantas semanas?</label>
               <div class="number-stepper">
-                <button type="button" class="stepper-btn" data-stepper-target="edit-repeat-weeks" data-step="-1" aria-label="Menos uma semana">−</button>
+                <button type="button" class="stepper-btn" data-stepper-target="edit-repeat-weeks" data-step="-1" aria-label="Menos uma semana">-</button>
                 <input
                   type="number"
                   id="edit-repeat-weeks"

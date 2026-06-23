@@ -124,6 +124,22 @@ h1 {
   align-items: flex-end;
 }
 
+.form-field,
+.filter-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+
+.form-field > span,
+.filter-field > span {
+  color: var(--text-muted);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+
 .row {
   display: flex;
   gap: 10px;
@@ -150,6 +166,11 @@ button {
   width: 100%;
 }
 
+.platform-field {
+  width: fit-content;
+  max-width: 280px;
+}
+
 .custom-place-fields {
   grid-column: span 2;
 }
@@ -169,11 +190,13 @@ button {
 }
 
 .field-platform {
+  width: 280px;
   max-width: 280px;
 }
 
 #repeat-type {
-  width: 132px;
+  width: 190px;
+  max-width: 190px;
 }
 
 .schedule-row {
@@ -363,12 +386,28 @@ button:focus {
   margin-bottom: 18px;
 }
 
+.schedule-controls {
+  display: flex;
+  align-items: flex-end;
+  justify-content: flex-end;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
 .schedule-summary {
   padding: 18px 22px;
   border-radius: 20px;
   background: rgba(255, 255, 255, 0.03);
   border: 1px solid var(--border);
   color: var(--text-muted);
+}
+
+.filter-field {
+  width: 220px;
+}
+
+.filter-field select {
+  width: 100%;
 }
 
 button,
@@ -663,6 +702,40 @@ button:active,
   gap: 14px;
 }
 
+.schedule-empty-state {
+  display: grid;
+  min-height: 260px;
+  place-items: center;
+}
+
+.empty-panel {
+  display: grid;
+  justify-items: center;
+  gap: 10px;
+  width: min(100%, 520px);
+  padding: 34px 24px;
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.035);
+  color: var(--text-muted);
+  text-align: center;
+}
+
+.empty-panel i {
+  width: 30px;
+  height: 30px;
+  color: var(--primary);
+}
+
+.empty-panel strong {
+  color: var(--text);
+  font-size: 1.05rem;
+}
+
+.empty-panel p {
+  margin: 0;
+}
+
 @media (max-width: 1100px) {
   .schedule-grid {
     grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
@@ -805,9 +878,11 @@ button:active,
 
 .btn-action {
   display: inline-flex;
+  justify-content: center;
   align-items: center;
-  gap: 8px;
-  padding: 8px 12px;
+  width: 36px;
+  height: 36px;
+  padding: 0;
   border: 1px solid var(--border);
   border-radius: 999px;
   background: #111827;
@@ -929,7 +1004,9 @@ button:active,
 }
 
 .calendar-card-actions .btn-action {
-  padding: 6px 10px;
+  width: 32px;
+  height: 32px;
+  padding: 0;
   font-size: 12px;
   position: relative;
   z-index: 1;
@@ -977,6 +1054,7 @@ button:active,
   .time-picker-group select,
   .field-compact,
   .field-platform,
+  .platform-field,
   .schedule-row #day {
     width: 100%;
     max-width: none;
@@ -997,6 +1075,10 @@ button:active,
     grid-template-columns: 1fr;
   }
 
+  .schedule-controls {
+    justify-content: stretch;
+  }
+
   .view-switcher {
     justify-self: stretch;
     width: 100%;
@@ -1004,6 +1086,10 @@ button:active,
 
   .view-toggle {
     flex: 1;
+  }
+
+  .filter-field {
+    width: 100%;
   }
 
   .schedule-grid,
