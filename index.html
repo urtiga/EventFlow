@@ -3,53 +3,229 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Cronograma Premium</title>
+    <title>Cronograma de Lançamentos</title>
     <link rel="stylesheet" href="style.css" />
     <script src="https://unpkg.com/lucide@latest"></script>
   </head>
   <body>
     <header class="admin-panel">
-      <h3>Gerenciar Evento</h3>
+      <div class="panel-top">
+        <div class="panel-copy">
+          <p class="eyebrow">Cronograma Pessoal</p>
+          <h1>Meus lançamentos da semana</h1>
+          <p class="subtitle">Escolha entre a vista semanal ou um calendário mensal inteligente com o mês atual.</p>
+        </div>
+        <div class="view-switcher">
+          <button type="button" id="weekly-view-btn" class="view-toggle active">Semana</button>
+          <button type="button" id="monthly-view-btn" class="view-toggle">Mês</button>
+        </div>
+      </div>
+
       <form id="schedule-form">
         <input
           type="text"
           id="title"
-          placeholder="Título (Ex: Flamengo, Lakers...)"
+          placeholder="Título (Ex: UFC, Série, Filme...)"
           required
         />
 
-        <div class="time-picker-group">
-          <select id="hour" title="Hora"></select>
-          <span>:</span>
-          <select id="minute" title="Minutos"></select>
+        <div class="row row-groups timing-row">
+          <div class="time-picker-group">
+            <select id="hour" title="Hora"></select>
+            <span>:</span>
+            <select id="minute" title="Minutos"></select>
+          </div>
+
+          <select id="repeat-type" class="field-compact">
+            <option value="weekly">Semanal</option>
+            <option value="unique">Único</option>
+          </select>
         </div>
 
-        <select id="place">
+        <div class="row row-groups schedule-row" id="schedule-row">
+          <select id="day" class="field-compact">
+            <option value="SEGUNDA">Segunda</option>
+            <option value="TERÇA">Terça</option>
+            <option value="QUARTA">Quarta</option>
+            <option value="QUINTA">Quinta</option>
+            <option value="SEXTA">Sexta</option>
+            <option value="SÁBADO">Sábado</option>
+            <option value="DOMINGO">Domingo</option>
+          </select>
+
+          <div class="field-inline repeat-weeks-field" id="repeat-weeks-field">
+            <label for="repeat-weeks">Repetir por quantas semanas?</label>
+            <div class="number-stepper">
+              <button type="button" class="stepper-btn" data-stepper-target="repeat-weeks" data-step="-1" aria-label="Menos uma semana">−</button>
+              <input
+                type="number"
+                id="repeat-weeks"
+                min="1"
+                max="52"
+                value="4"
+                title="Quantas semanas seguidas o evento se repete"
+              />
+              <button type="button" class="stepper-btn" data-stepper-target="repeat-weeks" data-step="1" aria-label="Mais uma semana">+</button>
+            </div>
+          </div>
+
+          <div class="field-inline event-date-field hidden" id="event-date-field">
+            <label for="event-date">Data do evento</label>
+            <input type="date" id="event-date" />
+          </div>
+        </div>
+
+        <select id="place" class="field-compact field-platform">
+          <option value="">Nenhuma plataforma</option>
+          <option value="other">Outra plataforma</option>
           <option value="twitch">Twitch</option>
           <option value="crunchyroll">Crunchyroll</option>
           <option value="prime video">Prime Video</option>
           <option value="hbo max">HBO Max</option>
-          <option value="espn">ESPN</option>
+          <option value="disney">Disney+</option>
           <option value="youtube">Youtube</option>
           <option value="netflix">Netflix</option>
         </select>
 
-        <select id="day">
-          <option value="SEGUNDA">Segunda</option>
-          <option value="TERÇA">Terça</option>
-          <option value="QUARTA">Quarta</option>
-          <option value="QUINTA">Quinta</option>
-          <option value="SEXTA">Sexta</option>
-          <option value="SÁBADO">Sábado</option>
-          <option value="DOMINGO">Domingo</option>
-        </select>
+        <input
+          type="text"
+          id="custom-place"
+          class="hidden custom-place-fields"
+          placeholder="Nome da plataforma (opcional)"
+        />
+        <input
+          type="url"
+          id="custom-url"
+          class="hidden custom-place-fields"
+          placeholder="Link da plataforma (ex: https://globoplay.globo.com)"
+        />
 
         <div class="form-actions">
           <button type="submit" id="submit-btn">Adicionar</button>
-          <button type="button" id="clear-btn">Limpar Semana</button>
+          <button type="button" id="clear-btn">Limpar semana</button>
         </div>
       </form>
     </header>
+
+    <section class="schedule-summary" id="schedule-summary"></section>
+
+    <div class="toast-container" id="toast-container" aria-live="polite" aria-atomic="true"></div>
+
+    <div class="modal-backdrop hidden" id="modal-backdrop" role="dialog" aria-modal="true">
+      <div class="modal-card">
+        <p id="modal-message">Confirmação</p>
+        <div class="modal-actions">
+          <button type="button" id="modal-cancel">Cancelar</button>
+          <button type="button" id="modal-confirm" class="confirm">Confirmar</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal-backdrop hidden" id="delete-modal-backdrop" role="dialog" aria-modal="true">
+      <div class="modal-card delete-modal-card">
+        <p id="delete-modal-message"></p>
+        <div class="modal-actions delete-modal-actions">
+          <button type="button" id="delete-skip-week">Só desta semana</button>
+          <button type="button" id="delete-all-weeks" class="danger">Todas as semanas</button>
+          <button type="button" id="delete-choice-cancel">Cancelar</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal-backdrop hidden" id="edit-modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="edit-modal-title">
+      <div class="modal-card edit-modal-card">
+        <h2 id="edit-modal-title" class="edit-modal-title">Editar evento</h2>
+        <form id="edit-form" class="edit-form">
+          <input type="text" id="edit-title" placeholder="Título" required />
+
+          <div class="edit-form-row edit-form-row--time">
+            <div class="time-picker-group edit-time-picker">
+              <select id="edit-hour" title="Hora"></select>
+              <span>:</span>
+              <select id="edit-minute" title="Minutos"></select>
+            </div>
+            <select id="edit-repeat-type" class="edit-repeat-type">
+              <option value="weekly">Semanal</option>
+              <option value="unique">Único</option>
+            </select>
+          </div>
+
+          <div class="edit-form-row edit-form-row--schedule" id="edit-schedule-row">
+            <select id="edit-day">
+              <option value="SEGUNDA">Segunda</option>
+              <option value="TERÇA">Terça</option>
+              <option value="QUARTA">Quarta</option>
+              <option value="QUINTA">Quinta</option>
+              <option value="SEXTA">Sexta</option>
+              <option value="SÁBADO">Sábado</option>
+              <option value="DOMINGO">Domingo</option>
+            </select>
+
+            <div class="field-inline repeat-weeks-field" id="edit-repeat-weeks-field">
+              <label for="edit-repeat-weeks">Repetir por quantas semanas?</label>
+              <div class="number-stepper">
+                <button type="button" class="stepper-btn" data-stepper-target="edit-repeat-weeks" data-step="-1" aria-label="Menos uma semana">−</button>
+                <input
+                  type="number"
+                  id="edit-repeat-weeks"
+                  min="1"
+                  max="52"
+                  value="4"
+                  title="Quantas semanas seguidas o evento se repete"
+                />
+                <button type="button" class="stepper-btn" data-stepper-target="edit-repeat-weeks" data-step="1" aria-label="Mais uma semana">+</button>
+              </div>
+            </div>
+
+            <div class="field-inline event-date-field hidden" id="edit-event-date-field">
+              <label for="edit-event-date">Data do evento</label>
+              <input type="date" id="edit-event-date" />
+            </div>
+          </div>
+
+          <select id="edit-place">
+            <option value="">Nenhuma plataforma</option>
+            <option value="other">Outra plataforma</option>
+            <option value="twitch">Twitch</option>
+            <option value="crunchyroll">Crunchyroll</option>
+            <option value="prime video">Prime Video</option>
+            <option value="hbo max">HBO Max</option>
+            <option value="disney">Disney+</option>
+            <option value="youtube">Youtube</option>
+            <option value="netflix">Netflix</option>
+          </select>
+
+          <input
+            type="text"
+            id="edit-custom-place"
+            class="hidden custom-place-fields"
+            placeholder="Nome da plataforma (opcional)"
+          />
+          <input
+            type="url"
+            id="edit-custom-url"
+            class="hidden custom-place-fields"
+            placeholder="Link da plataforma (ex: https://globoplay.globo.com)"
+          />
+
+          <div class="modal-actions edit-modal-actions">
+            <button type="button" id="edit-cancel">Cancelar</button>
+            <button type="submit" id="edit-save" class="confirm">Salvar</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <section class="calendar-header hidden" id="calendar-header">
+      <div class="calendar-title">
+        <strong id="calendar-month-name"></strong>
+        <span id="calendar-month-desc"></span>
+      </div>
+      <div class="calendar-controls">
+        <button type="button" id="prev-month-btn" title="Mês anterior">←</button>
+        <button type="button" id="next-month-btn" title="Próximo mês">→</button>
+      </div>
+    </section>
 
     <main class="schedule-grid" id="schedule-container"></main>
 
